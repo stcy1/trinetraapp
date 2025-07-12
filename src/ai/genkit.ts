@@ -1,5 +1,5 @@
 import {genkit} from 'genkit';
-import {nextJs} from '@genkit-ai/next/plugin';
+import {nextJs} from '@genkit-ai/next';
 import {googleAI} from '@genkit-ai/googleai';
 
 export const ai = genkit({
