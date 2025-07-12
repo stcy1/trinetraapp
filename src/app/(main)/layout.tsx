@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -60,8 +61,14 @@ export default function MainLayout({
         <SidebarRail />
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-2">
-            <Logo className="size-7 text-primary" />
-            <span className="text-lg font-semibold">Trinetra</span>
+            <Logo className="size-7 shrink-0 text-primary" />
+            <span
+              className={cn(
+                "text-lg font-semibold transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0"
+              )}
+            >
+              Trinetra
+            </span>
           </Link>
         </SidebarHeader>
         <SidebarContent>
