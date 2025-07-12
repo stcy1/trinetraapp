@@ -8,6 +8,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Send } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { generateAiCompanionResponse } from "@/ai/flows/generate-ai-companion-response";
+import { useToast } from "@/hooks/use-toast";
+
 
 interface Message {
   id: number;
@@ -26,6 +29,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -44,20 +48,40 @@ export default function ChatPage() {
       text: input,
       sender: "user",
     };
-    setMessages((prev) => [...prev, userMessage]);
+    
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput("");
     setIsLoading(true);
 
-    // Mock AI response
-    setTimeout(() => {
+    try {
+      const userHistory = newMessages
+        .map((msg) => `${msg.sender}: ${msg.text}`)
+        .join("\n");
+
+      const result = await generateAiCompanionResponse({
+        userMessage: input,
+        userHistory: userHistory,
+      });
+
       const aiResponse: Message = {
         id: Date.now() + 1,
-        text: `Thank you for sharing that. It sounds like you're dealing with a lot. Can you tell me more about how that makes you feel?`,
+        text: result.aiResponse,
         sender: "ai",
       };
       setMessages((prev) => [...prev, aiResponse]);
-      setIsLoading(false);
-    }, 1500);
+    } catch (error) {
+       console.error("Failed to get AI response:", error);
+       toast({
+        title: "Error",
+        description: "Couldn't get a response from the AI. Please try again.",
+        variant: "destructive",
+      });
+      // Revert user message if AI fails
+      setMessages(messages);
+    } finally {
+        setIsLoading(false);
+    }
   };
   
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
