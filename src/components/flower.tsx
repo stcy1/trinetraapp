@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -84,6 +85,15 @@ const flowerSvgs: Record<Emotion, (props: SVGProps<SVGSVGElement>) => JSX.Elemen
   ),
 };
 
+const flowerVariants = {
+  hidden: { opacity: 0, scale: 0.2, rotate: -15 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    rotate: 0,
+  },
+};
+
 export function Flower({
   emotion = "calm",
   mood_score = 0,
@@ -109,6 +119,16 @@ export function Flower({
       style: { transform: "scale(1)", opacity: 1 },
     };
   }, [mood_score]);
+  
+  const animationTransition = useMemo(() => {
+    // A higher mood score results in a bouncier, quicker animation
+    const score = mood_score ?? 0;
+    return {
+      type: 'spring',
+      damping: 10 + (score * 5), // more damping for higher score = less oscillation
+      stiffness: 100 + (score * 100), // more stiffness for higher score = faster
+    };
+  }, [mood_score]);
 
   const FlowerSvg = flowerSvgs[emotion] || flowerSvgs.calm;
 
@@ -121,8 +141,13 @@ export function Flower({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex flex-col items-center">
-            <div className="relative h-[80px] w-[80px] transition-transform duration-300 ease-in-out hover:scale-110 flex items-end justify-center">
+          <motion.div
+            className="flex flex-col items-center"
+            variants={flowerVariants}
+            transition={animationTransition}
+            whileHover={{ scale: 1.1, y: -5 }}
+          >
+            <div className="relative h-[80px] w-[80px] flex items-end justify-center">
                 <FlowerSvg style={style} className="absolute bottom-0 h-auto w-full" />
                 <div style={{ height: '80%' }} className="relative w-full flex items-end justify-center">
                   <svg viewBox="0 0 100 100" className="absolute bottom-0 h-full w-full">
@@ -136,7 +161,7 @@ export function Flower({
                 {format(new Date(timestamp), "MMM d")}
               </span>
             )}
-          </div>
+          </motion.div>
         </TooltipTrigger>
         <TooltipContent className="max-w-xs">
           <div className="space-y-1.5 text-sm">

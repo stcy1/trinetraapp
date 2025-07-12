@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Info, Loader2 } from 'lucide-react';
 import { getMoodGardenData } from '@/services/journal';
 import { GardenControls, type Filters } from './controls';
+import { motion } from 'framer-motion';
+
 
 type JournalEntry = {
   id: number;
@@ -15,6 +17,16 @@ type JournalEntry = {
   mood_score: number;
   created_at: string;
   transcript: string;
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
 };
 
 export default function MoodGardenPage() {
@@ -90,18 +102,23 @@ export default function MoodGardenPage() {
                     <h3 className="font-semibold text-lg mb-2">Cultivating your garden...</h3>
                  </div>
             ) : filteredData.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-x-4 gap-y-8 p-4 rounded-lg bg-secondary/20 min-h-[400px] items-end justify-center">
+                <motion.div 
+                  className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-x-4 gap-y-8 p-4 rounded-lg bg-secondary/20 min-h-[400px] items-end justify-center"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  key={JSON.stringify(filters)} // Re-trigger animation on filter change
+                >
                     {filteredData.map((entry) => (
-                        <div key={entry.id} className="flex flex-col items-center group">
-                            <Flower
-                                emotion={entry.emotion || 'calm'}
-                                mood_score={entry.mood_score || 0}
-                                timestamp={entry.created_at}
-                                transcript={entry.transcript || 'No transcript available.'}
-                            />
-                        </div>
+                        <Flower
+                            key={entry.id}
+                            emotion={entry.emotion || 'calm'}
+                            mood_score={entry.mood_score || 0}
+                            timestamp={entry.created_at}
+                            transcript={entry.transcript || 'No transcript available.'}
+                        />
                     ))}
-                </div>
+                </motion.div>
             ) : (
                  <div className="flex flex-col items-center justify-center text-center text-muted-foreground min-h-[400px] rounded-lg bg-secondary/20 p-8">
                   <Info className="h-8 w-8 mb-4" />
