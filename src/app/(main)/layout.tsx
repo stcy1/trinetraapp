@@ -25,6 +25,7 @@ import {
   CalendarDays,
   FilePieChart,
   Settings,
+  Flower2,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -46,6 +47,7 @@ const navItems = [
   { href: "/insights", label: "Insights", icon: Sparkles },
   { href: "/calendar", label: "Mood Calendar", icon: CalendarDays },
   { href: "/reports", label: "Reports", icon: FilePieChart },
+  { href: "/mood-garden", label: "Mood Garden", icon: Flower2 },
 ];
 
 export default function MainLayout({
