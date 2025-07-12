@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { login, signup } from '@/app/auth/actions';
+import { login, signup, signInWithGoogle } from '@/app/auth/actions';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
+import { GoogleIcon } from '@/components/google-icon';
 
 export default function LoginPage({
   searchParams,
@@ -28,11 +29,11 @@ export default function LoginPage({
         <CardHeader>
           <CardTitle className="text-2xl">Welcome</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account or sign up.
+            Enter your email below to login or sign up.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4">
+          <form className="grid gap-4" action={login}>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -52,11 +53,31 @@ export default function LoginPage({
                 {searchParams.message}
               </p>
             )}
-            <Button formAction={login} className="w-full">
-              Sign In
-            </Button>
-            <Button formAction={signup} variant="outline" className="w-full">
-              Sign Up
+            <div className="grid grid-cols-2 gap-2">
+                <Button formAction={login} className="w-full">
+                Sign In
+                </Button>
+                <Button formAction={signup} variant="outline" className="w-full">
+                Sign Up
+                </Button>
+            </div>
+          </form>
+
+            <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                    </span>
+                </div>
+            </div>
+
+          <form action={signInWithGoogle}>
+            <Button variant="outline" className="w-full">
+              <GoogleIcon className="mr-2 h-4 w-4" />
+              Sign in with Google
             </Button>
           </form>
         </CardContent>
@@ -64,5 +85,3 @@ export default function LoginPage({
     </div>
   );
 }
-
-    

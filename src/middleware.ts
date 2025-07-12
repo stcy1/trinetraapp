@@ -15,9 +15,14 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Auth callback route
+  if (request.nextUrl.pathname.startsWith('/auth/callback')) {
+    return response;
+  }
+
   // If the user is not authenticated and is trying to access a protected route,
   // redirect them to the login page.
-  if (!user && request.nextUrl.pathname !== '/login') {
+  if (!user && request.nextUrl.pathname !== '/login' && !request.nextUrl.pathname.startsWith('/auth')) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set(`redirectedFrom`, request.nextUrl.pathname);
@@ -48,5 +53,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
-
-    
