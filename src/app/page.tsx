@@ -1,102 +1,102 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookHeart, MessageCircle, Sparkles } from "lucide-react";
+import { Menu, Play, Mic } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
-        <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+    <div className="flex min-h-screen flex-col font-body">
+      {/* Hero Section */}
+      <section className="w-full bg-primary text-primary-foreground">
+        <header className="container mx-auto flex h-20 max-w-7xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
-            <Logo className="h-7 w-7 text-primary" />
-            <span className="text-xl font-bold text-foreground">Trinetra</span>
+            <Logo className="h-8 w-8 text-primary-foreground" />
+            <span className="text-2xl font-bold">Trinetra</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild>
-              <Link href="/dashboard">Login</Link>
+          <nav className="hidden items-center gap-6 md:flex">
+            <Link href="#" className="text-sm font-medium hover:underline">
+              Features
+            </Link>
+            <Link href="#" className="text-sm font-medium hover:underline">
+              Pricing
+            </Link>
+            <Link href="#" className="text-sm font-medium hover:underline">
+              About
+            </Link>
+          </nav>
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Menu className="h-6 w-6" />
+          </Button>
+        </header>
+
+        <main className="container mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-16 md:grid-cols-2 md:py-24">
+          <div className="flex flex-col items-start justify-center text-left">
+            <h1 className="text-5xl font-bold tracking-tighter text-primary-foreground md:text-6xl lg:text-7xl">
+              Connect with Your Emotions
+            </h1>
+            <p className="mt-6 max-w-md text-lg text-primary-foreground/90">
+              Record your thoughts, gain insights, and reflect with a
+              supportive AI companion.
+            </p>
+            <Button
+              asChild
+              className="mt-8 rounded-full bg-background px-8 py-6 text-lg font-semibold text-primary hover:bg-background/90"
+            >
+              <Link href="/dashboard">Start Your Journey</Link>
             </Button>
-            <Button asChild>
-              <Link href="/dashboard">Get Started</Link>
+          </div>
+          <div className="relative flex items-center justify-center">
+            <Image
+              src="https://placehold.co/500x500.png"
+              alt="Illustration of a person talking to an AI companion"
+              width={500}
+              height={500}
+              className="h-auto w-full max-w-sm md:max-w-md"
+              data-ai-hint="woman talking robot"
+            />
+          </div>
+        </main>
+      </section>
+
+      {/* Features Section */}
+      <section className="w-full bg-background py-20 text-foreground md:py-28">
+        <div className="container mx-auto max-w-5xl px-4">
+          <h2 className="mb-4 text-center text-4xl font-bold tracking-tighter">
+            See How It Works
+          </h2>
+          <div className="relative mx-auto mt-12 aspect-video max-w-4xl rounded-xl border-2 border-accent bg-accent/20 shadow-lg">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <button className="flex h-20 w-20 items-center justify-center rounded-full bg-background shadow-md transition-transform hover:scale-105">
+                <Play className="h-10 w-10 translate-x-0.5 text-foreground" />
+              </button>
+            </div>
+          </div>
+
+          <h2 className="mb-4 mt-20 text-center text-4xl font-bold tracking-tighter md:mt-28">
+            Engage in AI-powered conversations
+          </h2>
+
+          <div className="mx-auto mt-12 max-w-2xl rounded-xl border-2 border-accent bg-accent/20 p-8 text-center shadow-lg">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Mic className="h-10 w-10" />
+            </div>
+            <h3 className="text-2xl font-bold">
+              Engage in AI-powered conversations
+            </h3>
+            <p className="mt-4 text-foreground/80">
+              Have voice chats about your feelings and experiences. Get
+              empathetic responses and insights, powered by AI.
+            </p>
+            <Button
+              variant="outline"
+              className="mt-8 rounded-full border-foreground bg-background px-8 py-6 text-base font-semibold text-foreground hover:bg-foreground hover:text-background"
+            >
+              Start Listening
             </Button>
           </div>
         </div>
-      </header>
-
-      <main className="flex-1">
-        <section className="container mx-auto max-w-7xl px-4 py-20 text-center sm:py-32">
-          <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-            Find Clarity and Peace Within
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            Trinetra is your personal AI companion for emotional wellness.
-            Understand your feelings, discover patterns, and grow on your
-            journey to self-discovery.
-          </p>
-          <div className="mt-8 flex justify-center gap-4">
-            <Button size="lg" asChild>
-              <Link href="/dashboard">
-                Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
-        </section>
-
-        <section className="container mx-auto max-w-7xl px-4 py-16">
-           <div className="relative aspect-video w-full overflow-hidden rounded-xl border shadow-lg">
-             <Image
-                src="https://placehold.co/1200x600.png"
-                alt="Trinetra app dashboard screenshot"
-                layout="fill"
-                objectFit="cover"
-                data-ai-hint="calm app interface"
-             />
-           </div>
-        </section>
-
-        <section className="bg-muted py-20">
-          <div className="container mx-auto max-w-7xl px-4">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">
-                Your Toolkit for Emotional Wellness
-              </h2>
-              <p className="mt-4 text-muted-foreground">
-                Everything you need to navigate your inner world.
-              </p>
-            </div>
-            <div className="mt-12 grid gap-8 md:grid-cols-3">
-              <div className="flex flex-col items-center text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <BookHeart className="h-6 w-6" />
-                </div>
-                <h3 className="mt-4 text-xl font-semibold">Private Journal</h3>
-                <p className="mt-2 text-muted-foreground">
-                  A safe space to record your daily thoughts, feelings, and experiences.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <MessageCircle className="h-6 w-6" />
-                </div>
-                <h3 className="mt-4 text-xl font-semibold">AI Companion</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Engage in supportive dialogue to explore your emotions and gain new perspectives.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Sparkles className="h-6 w-6" />
-                </div>
-                <h3 className="mt-4 text-xl font-semibold">Personalized Insights</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Uncover patterns in your mood and receive actionable advice to foster well-being.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+      </section>
 
       <footer className="bg-background">
         <div className="container mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row">
