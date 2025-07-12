@@ -26,13 +26,15 @@ export default async function MoodGardenPage() {
         </CardHeader>
         <CardContent>
             {data && data.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-4 p-4 rounded-lg bg-secondary/20 min-h-[400px] items-end justify-center">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-x-4 gap-y-8 p-4 rounded-lg bg-secondary/20 min-h-[400px] items-end justify-center">
                     {data.map((entry) => (
                         <div key={entry.id} className="flex flex-col items-center group">
-                            <Flower moodScore={entry.mood_score} />
-                            <span className="text-xs text-muted-foreground mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                {new Date(entry.created_at).toLocaleDateString()}
-                            </span>
+                            <Flower
+                                emotion={entry.emotion || 'calm'}
+                                mood_score={entry.mood_score || 0}
+                                timestamp={entry.created_at}
+                                transcript={entry.transcript || 'No transcript available.'}
+                            />
                         </div>
                     ))}
                 </div>
