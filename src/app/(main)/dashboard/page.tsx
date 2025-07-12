@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -9,8 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookHeart, MessageCircle, ArrowRight } from "lucide-react";
+import { BookHeart, MessageCircle, ArrowRight, CornerUpRight } from "lucide-react";
 import Image from "next/image";
+
+// Mock data for recent entry, mirroring journal page structure
+const recentEntry = {
+    id: 1,
+    content:
+      "Feeling really optimistic about the new project. Had a great meeting with the team and I think we're on the right track. The sun was shining on my walk home, which was a nice bonus.",
+    date: "2 days ago",
+    sentiment: "positive",
+    score: 0.9,
+};
+
 
 export default function DashboardPage() {
   return (
@@ -24,60 +36,68 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="flex flex-col">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <BookHeart className="h-6 w-6" />
-              </div>
-              <CardTitle>Journal</CardTitle>
-            </div>
-            <CardDescription>
-              Record your thoughts and feelings. Your private space for
-              self-reflection.
-            </CardDescription>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="flex flex-col lg:col-span-2">
+           <CardHeader>
+            <CardTitle>Your Recent Entry</CardTitle>
+            <CardDescription>{recentEntry.date}</CardDescription>
           </CardHeader>
           <CardContent className="flex-grow">
-            <p className="text-sm text-muted-foreground">
-              A new entry is a new step on your journey. What's on your mind?
+            <p className="text-muted-foreground italic">
+             "{recentEntry.content}"
             </p>
           </CardContent>
           <div className="p-6 pt-0">
-            <Link href="/journal">
-              <Button className="w-full">
-                <span>Start a New Entry</span>
+             <Link href="/journal">
+              <Button variant="secondary">
+                <span>View All Entries</span>
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </div>
         </Card>
-        <Card className="flex flex-col">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <MessageCircle className="h-6 w-6" />
+        <div className="flex flex-col gap-6">
+            <Card className="flex flex-col flex-grow">
+              <CardHeader>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <BookHeart className="h-6 w-6" />
+                  </div>
+                <CardTitle className="text-xl">New Journal</CardTitle>
+                <CardDescription className="text-sm">
+                  A new entry is a new step.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow" />
+              <div className="p-6 pt-0">
+                <Link href="/journal">
+                  <Button className="w-full">
+                    <span>Write</span>
+                    <CornerUpRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
-              <CardTitle>AI Companion</CardTitle>
-            </div>
-            <CardDescription>
-              Talk through your feelings with a supportive AI companion.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <p className="text-sm text-muted-foreground">
-              Sometimes a conversation can illuminate the path forward.
-            </p>
-          </CardContent>
-          <div className="p-6 pt-0">
-            <Link href="/chat">
-              <Button className="w-full">
-                <span>Start a Conversation</span>
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </Card>
+            </Card>
+             <Card className="flex flex-col flex-grow">
+              <CardHeader>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <MessageCircle className="h-6 w-6" />
+                  </div>
+                <CardTitle className="text-xl">AI Companion</CardTitle>
+                <CardDescription className="text-sm">
+                  Talk through your feelings.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow" />
+              <div className="p-6 pt-0">
+                <Link href="/chat">
+                  <Button className="w-full">
+                    <span>Chat</span>
+                     <CornerUpRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+        </div>
       </div>
       <Card>
         <div className="grid md:grid-cols-2">
