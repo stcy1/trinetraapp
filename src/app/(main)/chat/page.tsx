@@ -100,7 +100,6 @@ export default function ChatPage() {
                   </div>
                   {message.sender === "user" && (
                     <Avatar className="h-9 w-9 border">
-                      <AvatarImage src="/placeholder-user.jpg" alt="@user" />
                       <AvatarFallback>U</AvatarFallback>
                     </Avatar>
                   )}
