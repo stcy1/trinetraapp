@@ -15,6 +15,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -56,6 +57,7 @@ export default function MainLayout({
   return (
     <SidebarProvider>
       <Sidebar>
+        <SidebarRail />
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-2">
             <Logo className="size-7 text-primary" />
@@ -89,8 +91,11 @@ export default function MainLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm md:justify-end md:px-6">
-          <SidebarTrigger className="md:hidden" />
+        <header className="flex h-16 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
+          <div className="flex items-center gap-2">
+             <SidebarTrigger className="md:hidden" />
+             <SidebarTrigger className="hidden md:flex" />
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
