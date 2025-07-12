@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -6,17 +7,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { generatePersonalizedInsights } from "@/ai/flows/generate-personalized-insights";
+import { useToast } from "@/hooks/use-toast";
+import { Remarkable } from "remarkable";
 
-const mockInsights = {
-  insights: `### Recurring Themes
-*   **Anxiety about project deadlines:** You've mentioned feeling "stressed" and "overwhelmed" in relation to work projects multiple times over the last two weeks.
-*   **Positive impact of social connection:** Your mood scores are consistently higher on days you mention spending time with friends.
-*   **Sleep quality affects mood:** Entries after a "restless night" often correlate with lower mood scores the next day.`,
-  copingStrategies: `### Suggested Coping Strategies (from NIMH)
-*   **For Anxiety:** Try deep breathing exercises. Inhale for 4 seconds, hold for 7, and exhale for 8. Repeat this several times when you feel stress rising.
-*   **To Improve Sleep:** Establish a relaxing bedtime routine. Avoid screens for an hour before bed and try reading a book or listening to calming music.
-*   **Leverage Social Support:** Proactively schedule time with friends, as this has a clear positive effect on your well-being.`,
-};
+// Mock data to simulate user history
+const mockJournalEntries = `
+- Feeling really optimistic about the new project. Had a great meeting with the team and I think we're on the right track. The sun was shining on my walk home, which was a nice bonus.
+- A bit of a slow day. Didn't get as much done as I hoped. Just feeling a bit flat, nothing majorly wrong, but not great either. Hopefully tomorrow is better.
+- Stressed about the upcoming deadline. So much to do.
+- Had a wonderful time with friends tonight. It really lifted my spirits.
+- Didn't sleep well last night, feeling groggy and irritable today.
+`;
+
+const mockChatLogs = `
+User: I'm feeling so overwhelmed with work.
+AI: It sounds like you're under a lot of pressure. What's one small thing you could do to feel even slightly better right now?
+User: I'm not sure, maybe take a short walk.
+AI: That's a great idea. A little fresh air can make a big difference.
+`;
+
+const md = new Remarkable();
 
 export default function InsightsPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,14 +35,27 @@ export default function InsightsPage() {
     insights: string;
     copingStrategies: string;
   } | null>(null);
+  const { toast } = useToast();
 
-  const handleGenerateInsights = () => {
+  const handleGenerateInsights = async () => {
     setIsLoading(true);
     setResults(null);
-    setTimeout(() => {
-      setResults(mockInsights);
+    try {
+      const result = await generatePersonalizedInsights({
+        journalEntries: mockJournalEntries,
+        chatLogs: mockChatLogs,
+      });
+      setResults(result);
+    } catch (error) {
+      console.error("Failed to generate insights:", error);
+      toast({
+        title: "Error",
+        description: "Couldn't generate insights. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -99,7 +123,7 @@ export default function InsightsPage() {
             <CardContent>
               <div
                 className="prose prose-sm max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: results.insights.replace(/\n/g, '<br />') }}
+                dangerouslySetInnerHTML={{ __html: md.render(results.insights) }}
               />
             </CardContent>
           </Card>
@@ -110,7 +134,7 @@ export default function InsightsPage() {
             <CardContent>
               <div
                 className="prose prose-sm max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: results.copingStrategies.replace(/\n/g, '<br />') }}
+                dangerouslySetInnerHTML={{ __html: md.render(results.copingStrategies) }}
               />
             </CardContent>
           </Card>
