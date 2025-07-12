@@ -12,8 +12,8 @@ import {
   CardFooter
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookHeart, MessageCircle, ArrowRight, CornerUpRight, Info, CalendarDays, Sparkles } from "lucide-react";
-import Image from "next/image";
+import { BookHeart, MessageCircle, ArrowRight, CornerUpRight, Info, CalendarDays, Sparkles, Flower2 } from "lucide-react";
+import { DashboardMoodGarden } from './mood-garden-preview';
 
 type Sentiment = "positive" | "neutral" | "negative";
 
@@ -93,6 +93,25 @@ export default function DashboardPage() {
             </CardFooter>
         </Card>
       </div>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Mood Garden 🌼</CardTitle>
+          <CardDescription>A glimpse of your most recent thoughts and feelings.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <DashboardMoodGarden />
+        </CardContent>
+        <CardFooter>
+            <Link href="/mood-garden">
+              <Button variant="secondary">
+                <span>View Full Garden</span>
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+        </CardFooter>
+      </Card>
+
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2 flex flex-col">

@@ -4,7 +4,7 @@
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@/lib/supabase/client';
 
-export async function getMoodGardenData() {
+export async function getMoodGardenData(limit?: number) {
   // This function can be called from both server and client components.
   // When on the server, it will use the server client.
   // When on the client, it will use the browser client.
@@ -19,16 +19,24 @@ export async function getMoodGardenData() {
     return [];
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('journal_entries')
     .select('id, user_id, emotion, mood_score, created_at, transcript')
     .eq('user_id', user.id)
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: false });
+
+  if (limit) {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query;
+
 
   if (error) {
     console.error('Error fetching journal entries:', error);
     return [];
   }
 
-  return data;
+  // we fetch descending to get the latest, but the garden looks better ascending
+  return data.reverse();
 }
