@@ -112,6 +112,11 @@ export function Flower({
 
   const FlowerSvg = flowerSvgs[emotion] || flowerSvgs.calm;
 
+  const truncatedTranscript = useMemo(() => {
+    if (!transcript) return "No transcript available.";
+    return transcript.split(" ").slice(0, 20).join(" ") + (transcript.split(" ").length > 20 ? "..." : "");
+  }, [transcript]);
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -140,7 +145,7 @@ export function Flower({
             </p>
             {timestamp && <p className="text-xs text-muted-foreground">{format(new Date(timestamp), "PPP p")}</p>}
             <blockquote className="mt-2 border-l-2 pl-3 italic text-muted-foreground">
-              {transcript}
+              "{truncatedTranscript}"
             </blockquote>
             <p className="text-xs font-mono text-muted-foreground">Mood Score: {mood_score?.toFixed(2)}</p>
           </div>
@@ -149,3 +154,5 @@ export function Flower({
     </TooltipProvider>
   );
 }
+
+    
