@@ -1,63 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import type { DayPicker } from "react-day-picker";
+import { format } from "date-fns";
 
-type Mood = "positive" | "neutral" | "negative";
+type Sentiment = "positive" | "neutral" | "negative";
 
-const moodData: Record<string, Mood> = {
-  "2024-07-01": "positive",
-  "2024-07-03": "negative",
-  "2024-07-04": "positive",
-  "2024-07-05": "neutral",
-  "2024-07-08": "negative",
-  "2024-07-10": "positive",
-  "2024-07-11": "positive",
-  "2024-07-12": "positive",
-  "2024-07-15": "neutral",
-  "2024-07-18": "negative",
-  "2024-07-22": "positive",
-  "2024-07-25": "neutral",
-  "2024-07-29": "negative",
-};
+interface JournalEntry {
+  id: number;
+  content: string;
+  date: string; // ISO string
+  sentiment: Sentiment;
+  score: number;
+}
 
-// Map moods to dates for the calendar
-const moodModifiers = Object.keys(moodData).reduce(
-  (acc, dateStr) => {
-    const mood = moodData[dateStr];
-    if (mood) {
-      if (!acc[mood]) {
-        acc[mood] = [];
-      }
-      acc[mood].push(new Date(dateStr));
-    }
-    return acc;
-  },
-  {} as Record<Mood, Date[]>
-);
+const JOURNAL_ENTRIES_KEY = 'trinetra-journal-entries';
 
 const modifierStyles: DayPicker["modifiersStyles"] = {
   positive: {
     backgroundColor: "hsl(var(--primary) / 0.2)",
     color: "hsl(var(--primary))",
-    fontWeight: "bold",
   },
   negative: {
-    backgroundColor: "hsl(var(--destructive) / 0.1)",
+    backgroundColor: "hsl(var(--destructive) / 0.2)",
     color: "hsl(var(--destructive))",
-    fontWeight: "bold",
   },
   neutral: {
-    backgroundColor: "hsl(var(--accent) / 0.2)",
+    backgroundColor: "hsl(var(--accent) / 0.3)",
     color: "hsl(var(--accent-foreground))",
   },
 };
 
 export default function CalendarPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [moodModifiers, setMoodModifiers] = useState<Record<Sentiment, Date[]>>({
+    positive: [],
+    neutral: [],
+    negative: [],
+  });
+
+  useEffect(() => {
+    const storedEntries = localStorage.getItem(JOURNAL_ENTRIES_KEY);
+    if (storedEntries) {
+      const entries: JournalEntry[] = JSON.parse(storedEntries);
+      
+      const modifiers = entries.reduce(
+        (acc, entry) => {
+          const sentiment = entry.sentiment.toLowerCase() as Sentiment;
+          if (acc[sentiment]) {
+            acc[sentiment].push(new Date(entry.date));
+          }
+          return acc;
+        },
+        { positive: [], neutral: [], negative: [] } as Record<Sentiment, Date[]>
+      );
+      setMoodModifiers(modifiers);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col gap-6">
@@ -66,12 +68,12 @@ export default function CalendarPage() {
           Mood Calendar
         </h1>
         <p className="text-muted-foreground">
-          Visualize your emotional journey and spot recurring patterns.
+          Visualize your emotional journey and spot recurring patterns based on your journal entries.
         </p>
       </div>
 
       <Card>
-        <CardContent className="flex flex-col items-center gap-4 p-4 md:flex-row md:p-6">
+        <CardContent className="flex flex-col items-start gap-6 p-4 md:flex-row md:p-6">
           <Calendar
             mode="single"
             selected={date}
@@ -88,15 +90,15 @@ export default function CalendarPage() {
               </CardHeader>
               <CardContent className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 rounded-full" style={modifierStyles.positive} />
+                  <div className="h-4 w-4 rounded-full" style={{backgroundColor: 'hsl(var(--primary) / 0.2)'}} />
                   <span className="text-sm">Positive</span>
                 </div>
                  <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 rounded-full" style={modifierStyles.neutral} />
+                  <div className="h-4 w-4 rounded-full" style={{backgroundColor: 'hsl(var(--accent) / 0.3)'}} />
                   <span className="text-sm">Neutral</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 rounded-full" style={modifierStyles.negative} />
+                  <div className="h-4 w-4 rounded-full" style={{backgroundColor: 'hsl(var(--destructive) / 0.2)'}} />
                   <span className="text-sm">Negative</span>
                 </div>
               </CardContent>
@@ -108,11 +110,11 @@ export default function CalendarPage() {
               <CardContent>
                 <p className="text-muted-foreground">
                   This month you've had{" "}
-                  <Badge variant="secondary" className="font-bold text-green-600">
+                  <Badge variant="secondary" className="font-bold" style={{color: 'hsl(var(--primary))'}}>
                     {moodModifiers.positive?.length || 0} positive
                   </Badge>{" "}
                   days,{" "}
-                  <Badge variant="secondary" className="font-bold text-red-600">
+                  <Badge variant="secondary" className="font-bold" style={{color: 'hsl(var(--destructive))'}}>
                     {moodModifiers.negative?.length || 0} negative
                   </Badge>{" "}
                   days, and{" "}

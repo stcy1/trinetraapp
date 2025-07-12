@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 @layer base {
   :root {
     --background: 49 55% 94%; /* Cream: #F5F5DC */
     --foreground: 88 16% 25%; /* Dark Sage for text */
-    --card: 49 55% 94%;
+    --card: 49 55% 98%; /* Lighter cream for cards */
     --card-foreground: 88 16% 25%;
     --popover: 49 55% 98%;
     --popover-foreground: 88 16% 25%;
@@ -24,7 +24,7 @@ body {
     --accent-foreground: 88 16% 25%;
     --destructive: 0 63% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 80 10% 75%;
+    --border: 80 10% 80%; /* Slightly darker border */
     --input: 33 25% 85%;
     --ring: 80 18% 52%;
     --chart-1: 12 76% 61%;
@@ -46,7 +46,7 @@ body {
   .dark {
     --background: 20 15% 10%;
     --foreground: 60 50% 90%;
-    --card: 20 15% 10%;
+    --card: 20 15% 12%; /* Darker card background */
     --card-foreground: 60 50% 90%;
     --popover: 20 15% 12%;
     --popover-foreground: 60 50% 90%;

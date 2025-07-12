@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -17,26 +18,41 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Line,
+  LineChart,
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
+import {
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartContainer,
+  type ChartConfig,
+} from "@/components/ui/chart";
 
 const weeklyMoodData = [
-  { name: "Mon", mood: 0.5 },
-  { name: "Tue", mood: -0.3 },
-  { name: "Wed", mood: 0.8 },
-  { name: "Thu", mood: 0.6 },
-  { name: "Fri", mood: -0.1 },
-  { name: "Sat", mood: 0.9 },
-  { name: "Sun", mood: 0.7 },
+    { date: "2024-07-22", mood: 0.5 },
+    { date: "2024-07-23", mood: -0.3 },
+    { date: "2024-07-24", mood: 0.8 },
+    { date: "2024-07-25", mood: 0.6 },
+    { date: "2024-07-26", mood: -0.1 },
+    { date: "2024-07-27", mood: 0.9 },
+    { date: "2024-07-28", mood: 0.7 },
 ];
 
-const triggerKeywords = ["project", "deadline", "team", "friends", "sleep"];
+const chartConfig = {
+  mood: {
+    label: "Mood Score",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig;
+
+const triggerKeywords = ["project", "deadline", "team", "friends", "sleep", "work", "family", "exercise"];
 
 const suggestedStrategies = [
-  "Practice deep breathing for anxiety.",
-  "Establish a consistent sleep schedule.",
-  "Schedule social activities proactively.",
-  "Break down large tasks into smaller steps.",
+  "Practice mindfulness or deep breathing exercises when feeling anxious about deadlines.",
+  "Consider scheduling short breaks during your workday to recharge.",
+  "Make time for social activities with friends to boost your mood.",
+  "Breaking down large projects into smaller, manageable tasks can reduce overwhelm.",
 ];
 
 export default function ReportsPage() {
@@ -72,20 +88,40 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyMoodData}>
+             <ChartContainer config={chartConfig} className="h-full w-full">
+              <LineChart
+                accessibilityLayer
+                data={weeklyMoodData}
+                margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" />
-                <YAxis domain={[-1, 1]} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--background))",
-                    borderColor: "hsl(var(--border))",
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { weekday: 'short' })}
+                />
+                <YAxis domain={[-1, 1]} tickLine={false} axisLine={false} tickMargin={8} />
+                 <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator="line" />}
+                  />
+                <Line
+                  dataKey="mood"
+                  type="monotone"
+                  stroke="var(--color-mood)"
+                  strokeWidth={2}
+                  dot={{
+                    fill: "var(--color-mood)",
+                    r: 4,
+                  }}
+                   activeDot={{
+                    r: 6,
                   }}
                 />
-                <Bar dataKey="mood" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+              </LineChart>
+            </ChartContainer>
           </div>
         </CardContent>
       </Card>
@@ -99,7 +135,7 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             {triggerKeywords.map((keyword) => (
-              <Badge key={keyword} variant="secondary" className="text-base">
+              <Badge key={keyword} variant="secondary" className="text-base font-medium">
                 {keyword}
               </Badge>
             ))}
