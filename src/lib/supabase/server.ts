@@ -4,10 +4,20 @@ import type { Database } from '@/lib/database.types';
 
 export function createClient() {
   const cookieStore = cookies();
+  
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // This will prevent the function from throwing an error.
+    // The calling function should handle the case where it gets null.
+    // In our case, getMoodGardenData will handle it.
+    throw new Error('Supabase URL or anonymous key is not set. Please check your .env file.');
+  }
 
   return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {

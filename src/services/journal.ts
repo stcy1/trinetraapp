@@ -2,18 +2,19 @@
 'use server';
 
 import { createClient as createServerClient } from '@/lib/supabase/server';
-import { createClient } from '@/lib/supabase/client';
+import { createClient as createBrowserClient } from '@/lib/supabase/client';
 
 export async function getMoodGardenData(limit?: number) {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    console.error("Supabase environment variables are not set. Please update your .env file. Returning empty data.");
-    return [];
-  }
-
   // This function can be called from both server and client components.
-  // When on the server, it will use the server client.
-  // When on the client, it will use the browser client.
-  const supabase = typeof window === 'undefined' ? createServerClient() : createClient();
+  // We determine the environment and create the appropriate client.
+  const supabase = typeof window === 'undefined' 
+    ? createServerClient() 
+    : createBrowserClient();
+  
+  // Because createServerClient can throw an error now, 
+  // we don't need the explicit check here anymore. 
+  // If it fails, the error boundary will catch it,
+  // which is better than silently failing.
   
   const {
     data: { user },
