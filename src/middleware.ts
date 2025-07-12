@@ -15,14 +15,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Auth callback route
-  if (request.nextUrl.pathname.startsWith('/auth/callback')) {
-    return response;
-  }
+  const isPublicRoute = request.nextUrl.pathname === '/' || request.nextUrl.pathname === '/login' || request.nextUrl.pathname.startsWith('/auth');
 
   // If the user is not authenticated and is trying to access a protected route,
   // redirect them to the login page.
-  if (!user && request.nextUrl.pathname !== '/login' && !request.nextUrl.pathname.startsWith('/auth')) {
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set(`redirectedFrom`, request.nextUrl.pathname);
