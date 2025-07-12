@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Mic, Send } from "lucide-react";
+import { Mic, Send, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { analyzeSentiment } from "@/ai/flows/analyze-sentiment";
+import { useToast } from "@/hooks/use-toast";
 
 type Sentiment = "positive" | "neutral" | "negative";
 
@@ -54,29 +56,36 @@ export default function JournalPage() {
   const [newEntry, setNewEntry] = useState("");
   const [entries, setEntries] = useState<JournalEntry[]>(initialEntries);
   const [isRecording, setIsRecording] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { toast } = useToast();
 
-  const handleAddEntry = () => {
+  const handleAddEntry = async () => {
     if (!newEntry.trim()) return;
+    setIsAnalyzing(true);
 
-    // Mock sentiment analysis
-    const newId = entries.length + 1;
-    const sentiment: Sentiment =
-      newEntry.includes("great") || newEntry.includes("good")
-        ? "positive"
-        : newEntry.includes("bad") || newEntry.includes("sad")
-        ? "negative"
-        : "neutral";
-    const score = sentiment === "positive" ? 0.8 : sentiment === "negative" ? -0.7 : 0.2;
+    try {
+      const result = await analyzeSentiment({ text: newEntry });
 
-    const entry: JournalEntry = {
-      id: newId,
-      content: newEntry,
-      date: "Just now",
-      sentiment,
-      score,
-    };
-    setEntries([entry, ...entries]);
-    setNewEntry("");
+      const entry: JournalEntry = {
+        id: Date.now(),
+        content: newEntry,
+        date: "Just now",
+        // Ensure the sentiment from AI is one of the allowed types.
+        sentiment: result.sentiment.toLowerCase() as Sentiment,
+        score: result.score,
+      };
+      setEntries([entry, ...entries]);
+      setNewEntry("");
+    } catch (error) {
+      console.error("Failed to analyze sentiment:", error);
+      toast({
+        title: "Error",
+        description: "Could not analyze your journal entry. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -104,6 +113,7 @@ export default function JournalPage() {
             onChange={(e) => setNewEntry(e.target.value)}
             rows={6}
             className="text-base"
+            disabled={isAnalyzing}
           />
         </CardContent>
         <CardFooter className="flex justify-between">
@@ -111,13 +121,18 @@ export default function JournalPage() {
             variant="outline"
             onClick={() => setIsRecording(!isRecording)}
             className="flex items-center gap-2"
+            disabled={isAnalyzing}
           >
             <Mic className={`h-4 w-4 ${isRecording ? "text-red-500" : ""}`} />
             {isRecording ? "Stop Recording" : "Record Audio"}
           </Button>
-          <Button onClick={handleAddEntry} disabled={!newEntry.trim()}>
-            <Send className="mr-2 h-4 w-4" />
-            Save Entry
+          <Button onClick={handleAddEntry} disabled={!newEntry.trim() || isAnalyzing}>
+            {isAnalyzing ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="mr-2 h-4 w-4" />
+            )}
+            {isAnalyzing ? "Analyzing..." : "Save Entry"}
           </Button>
         </CardFooter>
       </Card>
@@ -135,9 +150,9 @@ export default function JournalPage() {
               <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>{entry.date}</span>
                 <div className="flex items-center gap-2">
-                   <div className={`h-2.5 w-2.5 rounded-full ${sentimentColors[entry.sentiment]}`} />
+                   <div className={`h-2.5 w-2.5 rounded-full ${sentimentColors[entry.sentiment] || 'bg-gray-400'}`} />
                   <span className="capitalize">{entry.sentiment}</span>
-                  <Badge variant="outline">Score: {entry.score}</Badge>
+                  <Badge variant="outline">Score: {entry.score.toFixed(2)}</Badge>
                 </div>
               </CardFooter>
             </Card>
