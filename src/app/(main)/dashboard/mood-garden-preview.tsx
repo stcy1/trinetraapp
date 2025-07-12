@@ -6,6 +6,8 @@ import { Flower } from '@/components/flower';
 import { Info, Loader2 } from 'lucide-react';
 import { getMoodGardenData } from '@/services/journal';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 type JournalEntry = {
   id: number;
@@ -55,7 +57,10 @@ export function DashboardMoodGarden() {
       <div className="flex flex-col items-center justify-center text-center text-muted-foreground min-h-[150px] rounded-lg bg-secondary/20 p-8">
         <Info className="h-8 w-8 mb-2" />
         <h3 className="font-semibold text-md mb-1">Your garden is waiting to sprout!</h3>
-        <p className="text-sm">Write a journal entry to plant your first flower.</p>
+        <p className="text-sm mb-4">Write a journal entry to plant your first flower.</p>
+         <Link href="/journal" passHref>
+          <Button variant="secondary">Start Journaling</Button>
+        </Link>
       </div>
     );
   }

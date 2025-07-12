@@ -132,7 +132,9 @@ export default function DashboardPage() {
                <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-full rounded-lg bg-secondary/20 p-8">
                   <Info className="h-8 w-8 mb-2" />
                   <p>Your latest journal entry will appear here.</p>
-                  <p className="text-sm">Click "Write a New Entry" above to get started.</p>
+                  <Link href="/journal" passHref>
+                    <Button variant="link" className="mt-2">Write a New Entry</Button>
+                  </Link>
                </div>
             )}
           </CardContent>
