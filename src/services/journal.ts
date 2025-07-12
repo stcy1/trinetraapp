@@ -1,18 +1,20 @@
+
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
+import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/client';
 
 export async function getMoodGardenData() {
-  const cookieStore = cookies();
-  const supabase = createClient();
-
+  // This function can be called from both server and client components.
+  // When on the server, it will use the server client.
+  // When on the client, it will use the browser client.
+  const supabase = typeof window === 'undefined' ? createServerClient() : createClient();
+  
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    // Handle the case where there is no logged-in user
     console.error('No user is logged in.');
     return [];
   }
@@ -25,8 +27,6 @@ export async function getMoodGardenData() {
 
   if (error) {
     console.error('Error fetching journal entries:', error);
-    // Depending on your error handling strategy, you might want to throw
-    // the error or return a specific error object.
     return [];
   }
 
