@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -18,18 +19,35 @@ interface Message {
   sender: "user" | "ai";
 }
 
+const CHAT_MESSAGES_KEY = "trinetra-chat-messages";
+
+const initialMessage: Message = {
+  id: 1,
+  text: "Hello! I'm here to listen. What's on your mind today?",
+  sender: "ai",
+};
+
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: "Hello! I'm here to listen. What's on your mind today?",
-      sender: "ai",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const storedMessages = localStorage.getItem(CHAT_MESSAGES_KEY);
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages));
+    } else {
+      setMessages([initialMessage]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(CHAT_MESSAGES_KEY, JSON.stringify(messages));
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {

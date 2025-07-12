@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from "next/link";
 import {
   Card,
@@ -10,21 +11,35 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookHeart, MessageCircle, ArrowRight, CornerUpRight } from "lucide-react";
+import { BookHeart, MessageCircle, ArrowRight, CornerUpRight, Info } from "lucide-react";
 import Image from "next/image";
 
-// Mock data for recent entry, mirroring journal page structure
-const recentEntry = {
-    id: 1,
-    content:
-      "Feeling really optimistic about the new project. Had a great meeting with the team and I think we're on the right track. The sun was shining on my walk home, which was a nice bonus.",
-    date: "2 days ago",
-    sentiment: "positive",
-    score: 0.9,
-};
+type Sentiment = "positive" | "neutral" | "negative";
+
+interface JournalEntry {
+  id: number;
+  content: string;
+  date: string;
+  sentiment: Sentiment;
+  score: number;
+}
+
+const JOURNAL_ENTRIES_KEY = 'trinetra-journal-entries';
 
 
 export default function DashboardPage() {
+  const [recentEntry, setRecentEntry] = useState<JournalEntry | null>(null);
+
+  useEffect(() => {
+    const storedEntries = localStorage.getItem(JOURNAL_ENTRIES_KEY);
+    if (storedEntries) {
+      const entries: JournalEntry[] = JSON.parse(storedEntries);
+      if (entries.length > 0) {
+        setRecentEntry(entries[0]);
+      }
+    }
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="space-y-1.5">
@@ -40,16 +55,28 @@ export default function DashboardPage() {
         <Card className="flex flex-col lg:col-span-2">
            <CardHeader>
             <CardTitle>Your Recent Entry</CardTitle>
-            <CardDescription>{recentEntry.date}</CardDescription>
+             {recentEntry ? (
+              <CardDescription>{recentEntry.date}</CardDescription>
+            ) : (
+               <CardDescription>You haven't written any entries yet.</CardDescription>
+            )}
           </CardHeader>
           <CardContent className="flex-grow">
-            <p className="text-muted-foreground italic">
-             "{recentEntry.content}"
-            </p>
+             {recentEntry ? (
+              <p className="text-muted-foreground italic">
+                "{recentEntry.content}"
+              </p>
+            ) : (
+               <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-full">
+                  <Info className="h-8 w-8 mb-2" />
+                  <p>Your latest journal entry will appear here.</p>
+                  <p className="text-sm">Click "Write" to get started.</p>
+               </div>
+            )}
           </CardContent>
           <div className="p-6 pt-0">
              <Link href="/journal">
-              <Button variant="secondary">
+              <Button variant="secondary" disabled={!recentEntry}>
                 <span>View All Entries</span>
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

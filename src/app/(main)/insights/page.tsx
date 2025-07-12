@@ -11,21 +11,8 @@ import { generatePersonalizedInsights } from "@/ai/flows/generate-personalized-i
 import { useToast } from "@/hooks/use-toast";
 import { Remarkable } from "remarkable";
 
-// Mock data to simulate user history
-const mockJournalEntries = `
-- Feeling really optimistic about the new project. Had a great meeting with the team and I think we're on the right track. The sun was shining on my walk home, which was a nice bonus.
-- A bit of a slow day. Didn't get as much done as I hoped. Just feeling a bit flat, nothing majorly wrong, but not great either. Hopefully tomorrow is better.
-- Stressed about the upcoming deadline. So much to do.
-- Had a wonderful time with friends tonight. It really lifted my spirits.
-- Didn't sleep well last night, feeling groggy and irritable today.
-`;
-
-const mockChatLogs = `
-User: I'm feeling so overwhelmed with work.
-AI: It sounds like you're under a lot of pressure. What's one small thing you could do to feel even slightly better right now?
-User: I'm not sure, maybe take a short walk.
-AI: That's a great idea. A little fresh air can make a big difference.
-`;
+const JOURNAL_ENTRIES_KEY = "trinetra-journal-entries";
+const CHAT_MESSAGES_KEY = "trinetra-chat-messages";
 
 const md = new Remarkable();
 
@@ -41,9 +28,34 @@ export default function InsightsPage() {
     setIsLoading(true);
     setResults(null);
     try {
+      const storedJournalEntries = localStorage.getItem(JOURNAL_ENTRIES_KEY);
+      const storedChatLogs = localStorage.getItem(CHAT_MESSAGES_KEY);
+
+      const journalEntries = storedJournalEntries
+        ? JSON.parse(storedJournalEntries)
+            .map((entry: any) => `- ${entry.content}`)
+            .join("\n")
+        : "No journal entries yet.";
+
+      const chatLogs = storedChatLogs
+        ? JSON.parse(storedChatLogs)
+            .map((msg: any) => `${msg.sender}: ${msg.text}`)
+            .join("\n")
+        : "No chat history yet.";
+
+      if (journalEntries === "No journal entries yet." && chatLogs === "No chat history yet.") {
+        toast({
+          title: "Not Enough Data",
+          description: "Please write a journal entry or chat with the AI companion first to generate insights.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const result = await generatePersonalizedInsights({
-        journalEntries: mockJournalEntries,
-        chatLogs: mockChatLogs,
+        journalEntries: journalEntries,
+        chatLogs: chatLogs,
       });
       setResults(result);
     } catch (error) {

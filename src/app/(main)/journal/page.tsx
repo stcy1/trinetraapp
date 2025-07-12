@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -16,23 +17,27 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { analyzeSentiment } from "@/ai/flows/analyze-sentiment";
 import { useToast } from "@/hooks/use-toast";
+import { formatDistanceToNow } from 'date-fns';
+
 
 type Sentiment = "positive" | "neutral" | "negative";
 
 interface JournalEntry {
   id: number;
   content: string;
-  date: string;
+  date: string; // ISO string
   sentiment: Sentiment;
   score: number;
 }
+
+const JOURNAL_ENTRIES_KEY = 'trinetra-journal-entries';
 
 const initialEntries: JournalEntry[] = [
   {
     id: 1,
     content:
       "Feeling really optimistic about the new project. Had a great meeting with the team and I think we're on the right track. The sun was shining on my walk home, which was a nice bonus.",
-    date: "2 days ago",
+    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     sentiment: "positive",
     score: 0.9,
   },
@@ -40,7 +45,7 @@ const initialEntries: JournalEntry[] = [
     id: 2,
     content:
       "A bit of a slow day. Didn't get as much done as I hoped. Just feeling a bit flat, nothing majorly wrong, but not great either. Hopefully tomorrow is better.",
-    date: "Yesterday",
+    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     sentiment: "neutral",
     score: 0.1,
   },
@@ -54,10 +59,28 @@ const sentimentColors: Record<Sentiment, string> = {
 
 export default function JournalPage() {
   const [newEntry, setNewEntry] = useState("");
-  const [entries, setEntries] = useState<JournalEntry[]>(initialEntries);
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
+
+
+  useEffect(() => {
+    const storedEntries = localStorage.getItem(JOURNAL_ENTRIES_KEY);
+    if (storedEntries) {
+      setEntries(JSON.parse(storedEntries));
+    } else {
+       setEntries(initialEntries);
+    }
+  }, []);
+
+  useEffect(() => {
+    // We don't want to save the initial demo entries to local storage
+    // until the user has added their own entry.
+    if (entries.length > 0 && entries !== initialEntries) {
+      localStorage.setItem(JOURNAL_ENTRIES_KEY, JSON.stringify(entries));
+    }
+  }, [entries]);
 
   const handleAddEntry = async () => {
     if (!newEntry.trim()) return;
@@ -69,8 +92,7 @@ export default function JournalPage() {
       const entry: JournalEntry = {
         id: Date.now(),
         content: newEntry,
-        date: "Just now",
-        // Ensure the sentiment from AI is one of the allowed types.
+        date: new Date().toISOString(),
         sentiment: result.sentiment.toLowerCase() as Sentiment,
         score: result.score,
       };
@@ -148,7 +170,7 @@ export default function JournalPage() {
                 <p className="text-muted-foreground">{entry.content}</p>
               </CardContent>
               <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
-                <span>{entry.date}</span>
+                <span>{formatDistanceToNow(new Date(entry.date), { addSuffix: true })}</span>
                 <div className="flex items-center gap-2">
                    <div className={`h-2.5 w-2.5 rounded-full ${sentimentColors[entry.sentiment] || 'bg-gray-400'}`} />
                   <span className="capitalize">{entry.sentiment}</span>
