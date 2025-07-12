@@ -37,7 +37,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/journal", label: "Journal", icon: BookHeart },
   { href: "/chat", label: "Chat", icon: MessageCircle },
   { href: "/insights", label: "Insights", icon: Sparkles },
@@ -56,10 +56,10 @@ export default function MainLayout({
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Logo className="size-7 text-primary" />
             <span className="text-lg font-semibold">Trinetra</span>
-          </div>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
