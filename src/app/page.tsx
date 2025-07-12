@@ -1,12 +1,19 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Menu, Play, Mic, BookHeart, MessageCircle, CalendarDays, Sparkles } from "lucide-react";
+import { Menu, Play } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { BookHeart, MessageCircle, CalendarDays, Sparkles } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <div className="flex min-h-screen flex-col font-body">
       {/* Hero Section */}
@@ -28,12 +35,20 @@ export default function LandingPage() {
             </Link>
           </nav>
           <div className="hidden md:flex items-center gap-2">
-             <Button variant="ghost" asChild>
-                <Link href="/dashboard">Login</Link>
-             </Button>
-             <Button className="bg-background text-primary hover:bg-background/90" asChild>
-                <Link href="/dashboard">Sign Up</Link>
-             </Button>
+            {user ? (
+               <Button className="bg-background text-primary hover:bg-background/90" asChild>
+                <Link href="/dashboard">Go to Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button className="bg-background text-primary hover:bg-background/90" asChild>
+                  <Link href="/login">Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-6 w-6" />
@@ -239,3 +254,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    

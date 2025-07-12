@@ -26,6 +26,7 @@ import {
   FilePieChart,
   Settings,
   Flower2,
+  LogOut
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -39,6 +40,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
+import { logout } from "@/app/auth/actions";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from '@supabase/supabase-js';
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -56,6 +60,16 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [user, setUser] = React.useState<User | null>(null);
+
+  React.useEffect(() => {
+    const supabase = createClient();
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
 
   return (
     <SidebarProvider>
@@ -113,17 +127,31 @@ export default function MainLayout({
               >
                 <Avatar className="h-9 w-9">
                   <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="person" />
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">My Account</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                        {user?.email}
+                    </p>
+                </div>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <form action={logout}>
+                <DropdownMenuItem asChild>
+                    <button type="submit" className="w-full">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                    </button>
+                </DropdownMenuItem>
+              </form>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
@@ -134,3 +162,5 @@ export default function MainLayout({
     </SidebarProvider>
   );
 }
+
+    

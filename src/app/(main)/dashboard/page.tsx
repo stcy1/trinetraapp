@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { BookHeart, MessageCircle, ArrowRight, CornerUpRight, Info, CalendarDays, Sparkles, Flower2 } from "lucide-react";
 import { DashboardMoodGarden } from './mood-garden-preview';
+import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 type Sentiment = "positive" | "neutral" | "negative";
 
@@ -30,7 +32,7 @@ const JOURNAL_ENTRIES_KEY = 'trinetra-journal-entries';
 
 export default function DashboardPage() {
   const [recentEntry, setRecentEntry] = useState<JournalEntry | null>(null);
-  const [userName, setUserName] = useState("friend");
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const storedEntries = localStorage.getItem(JOURNAL_ENTRIES_KEY);
@@ -40,7 +42,16 @@ export default function DashboardPage() {
         setRecentEntry(entries[0]);
       }
     }
+     const supabase = createClient();
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
   }, []);
+
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || "friend";
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -189,3 +200,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
