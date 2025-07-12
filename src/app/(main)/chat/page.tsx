@@ -100,6 +100,7 @@ export default function ChatPage() {
                   </div>
                   {message.sender === "user" && (
                     <Avatar className="h-9 w-9 border">
+                      <AvatarImage src="https://placehold.co/100x100.png" data-ai-hint="person" />
                       <AvatarFallback>U</AvatarFallback>
                     </Avatar>
                   )}
