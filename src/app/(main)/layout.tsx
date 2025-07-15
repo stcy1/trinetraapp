@@ -76,7 +76,7 @@ export default function MainLayout({
       <Sidebar>
         <SidebarRail />
         <SidebarHeader>
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/dashboard" className="flex items-center gap-2">
             <Logo className="size-7 shrink-0 text-primary" />
             <span
               className={cn(
@@ -162,5 +162,4 @@ export default function MainLayout({
     </SidebarProvider>
   );
 }
-
     
