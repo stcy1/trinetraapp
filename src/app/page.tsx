@@ -153,8 +153,7 @@ export default async function LandingPage() {
              <Image
                 src="https://placehold.co/1280x720.png"
                 alt="App preview video"
-                layout="fill"
-                objectFit="cover"
+                fill
                 className="rounded-xl"
                 data-ai-hint="calm landscape"
               />

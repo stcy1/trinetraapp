@@ -1,10 +1,8 @@
 import {genkit} from 'genkit';
-import {nextJs} from '@genkit-ai/next';
 import {googleAI} from '@genkit-ai/googleai';
-
+ 
 export const ai = genkit({
   plugins: [
-    nextJs(),
     googleAI({
       apiKey: process.env.GOOGLE_GENAI_API_KEY,
     }),

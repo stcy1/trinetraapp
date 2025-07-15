@@ -59,7 +59,7 @@ export async function signInWithGoogle() {
   });
 
   if (error) {
-    console.error('Google Sign-In Error:', error.message);
+    console.error('Google Sign-In Error:', error);
     return redirect('/login?message=Could not sign in with Google');
   }
 
