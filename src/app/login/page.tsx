@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
 import { GoogleIcon } from '@/components/google-icon';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function LoginPage({
   searchParams,
@@ -45,8 +46,25 @@ export default function LoginPage({
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                <Link
+                  href="#"
+                  className="ml-auto inline-block text-sm underline"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
               <Input id="password" type="password" name="password" required />
+            </div>
+             <div className="flex items-center space-x-2">
+              <Checkbox id="remember-me" />
+              <Label
+                htmlFor="remember-me"
+                className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Remember me
+              </Label>
             </div>
             {searchParams?.message && (
               <p className="text-sm p-3 bg-foreground/10 text-foreground text-center rounded-md">
